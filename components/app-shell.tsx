@@ -1,23 +1,43 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { AlertTriangle, Award, BarChart3, CreditCard, Gamepad2, Layers3, Menu, Upload, UserRound, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/components/auth-provider";
 
-const nav = [
+const protectedNav = [
   { href: "/play", label: "ゲームをプレイ", icon: Gamepad2 },
   { href: "/upload", label: "ファイル読込", icon: Upload },
   { href: "/dashboard", label: "ダッシュボード", icon: BarChart3 },
   { href: "/improvements", label: "改善ハンド", icon: AlertTriangle },
   { href: "/good-hands", label: "良かったハンド", icon: Award },
+];
+const publicNav = [
   { href: "/pricing", label: "料金プラン", icon: CreditCard },
   { href: "/account", label: "アカウント", icon: UserRound },
 ];
+const publicPaths = ["/login", "/pricing", "/terms", "/privacy", "/legal", "/account"];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
+  const router = useRouter();
+  const { user, loading } = useAuth();
   const [open, setOpen] = useState(false);
+  const isPublic = publicPaths.some((item) => path === item || path.startsWith(`${item}/`));
+  const requiresLogin = !isPublic;
+  const nav = user ? [...protectedNav, ...publicNav] : publicNav;
+
+  useEffect(() => {
+    if (!loading && requiresLogin && !user) {
+      router.replace(`/login?next=${encodeURIComponent(path)}`);
+    }
+  }, [loading, requiresLogin, user, router, path]);
+
+  const pageContent = requiresLogin && (loading || !user)
+    ? <main className="auth-guard"><span className="auth-spinner"/><h1>ログインが必要です</h1><p>ゲームと分析データを安全に表示するため、ログイン画面へ移動します。</p></main>
+    : children;
+
   return (
     <div className="app-shell">
       <aside className={open ? "sidebar open" : "sidebar"}>
@@ -44,7 +64,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <button onClick={() => setOpen(true)} aria-label="メニューを開く"><Menu/></button>
           <span>RiverNote</span>
         </header>
-        {children}
+        {pageContent}
         <footer className="site-footer">
           <span>© 2026 RiverNote</span>
           <nav aria-label="法的情報">
