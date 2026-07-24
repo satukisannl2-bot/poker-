@@ -1,2 +1,20 @@
-"use client";
-export default function Privacy(){return <main className="legal"><h1>プライバシーポリシー（公開前草案）</h1><p>最終更新日：2026年7月24日</p><h2>取得する情報</h2><p>メールアドレス、ハンド履歴、利用状況、契約状態、アクセス情報を取得する場合があります。</p><h2>利用目的</h2><p>ログイン、解析、履歴保存、課金管理、不正利用防止、品質改善に利用します。</p><h2>外部サービス</h2><p>Vercel、Supabase、Stripeを利用予定です。各社の規約とポリシーも適用されます。</p><h2>アフィリエイト</h2><p>広告またはアフィリエイトリンクには「広告」「PR」等を明示します。</p><div className="draft">公開前にCookie、国外移転、保存期間、問い合わせ先、削除手続きを確定してください。</div><style jsx>{`.legal{max-width:820px}.legal h2{margin-top:28px}.legal p{line-height:1.9;color:#59645f}.draft{padding:15px;background:#fff1d9;border-radius:8px}`}</style></main>}
+export default function Privacy() {
+  return (
+    <main className="legal-page">
+      <span className="eyebrow">PRIVACY POLICY</span>
+      <h1>プライバシーポリシー</h1>
+      <p className="legal-updated">最終更新日：2026年7月25日</p>
+
+      <section><h2>1. 取得する情報</h2><p>メールアドレス、表示名、認証情報、アップロードしたハンド履歴、保存した復習データ、サービス利用状況、契約状態、決済に必要な識別情報、アクセスログおよび端末情報を取得する場合があります。カード番号等の決済情報はStripeが管理し、RiverNoteでは保持しません。</p></section>
+      <section><h2>2. 利用目的</h2><p>ログイン、ハンド解析、履歴保存、利用上限の管理、料金請求、契約管理、お問い合わせ対応、不正利用防止、障害調査、品質および機能改善、法令上必要な対応のために利用します。</p></section>
+      <section><h2>3. 外部サービス</h2><p>ホスティングにVercel、認証・データ保存にSupabase、決済にStripeを利用します。処理のために必要な情報が国外のサーバーで取り扱われる場合があります。</p></section>
+      <section><h2>4. 第三者提供</h2><p>本人の同意がある場合、業務委託に必要な場合、法令に基づく場合、生命・身体・財産の保護に必要な場合を除き、個人データを第三者に提供しません。</p></section>
+      <section><h2>5. 保存期間と安全管理</h2><p>利用目的の達成に必要な期間または法令で求められる期間保存し、不要となった情報は合理的な方法で削除します。アクセス制御、通信の暗号化、ユーザーごとのデータ分離等の安全管理措置を講じます。</p></section>
+      <section><h2>6. 開示・訂正・削除</h2><p>本人は、保有個人データの開示、訂正、利用停止または削除を請求できます。本人確認後、法令に従って対応します。アカウント削除機能の提供まではお問い合わせ窓口で受け付けます。</p></section>
+      <section><h2>7. Cookie等</h2><p>ログイン状態の維持、セキュリティおよびサービス改善のためCookieや類似技術を利用する場合があります。広告・アフィリエイトを導入する場合は、広告であることを明示し、必要な同意管理を追加します。</p></section>
+      <section><h2>8. 改定</h2><p>内容を改定した場合、重要な変更はサービス上で通知します。</p></section>
+
+      <aside className="legal-warning">公開前草案です。運営者名、問い合わせ先、保存期間の詳細、国外移転先を確定してから一般公開してください。</aside>
+    </main>
+  );
+}
