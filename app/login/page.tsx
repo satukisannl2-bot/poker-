@@ -1,0 +1,9 @@
+"use client";
+import { FormEvent,useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
+export default function Login(){
+ const [email,setEmail]=useState(""),[password,setPassword]=useState(""),[mode,setMode]=useState<"login"|"signup">("login"),[message,setMessage]=useState("");const router=useRouter();
+ async function submit(e:FormEvent){e.preventDefault();if(!supabase){setMessage("Supabaseの接続情報を設定してください");return}const result=mode==="signup"?await supabase.auth.signUp({email,password}):await supabase.auth.signInWithPassword({email,password});if(result.error)setMessage(result.error.message);else{setMessage(mode==="signup"?"確認メールを送信しました":"ログインしました");router.push("/account")}}
+ return <main><div className="auth-card"><span className="eyebrow">RIVERNOTE ACCOUNT</span><h1>{mode==="login"?"ログイン":"無料アカウント作成"}</h1><p>ハンド履歴をユーザーごとに安全に保存します。</p><form onSubmit={submit}><label>メール<input type="email" value={email} onChange={e=>setEmail(e.target.value)} required/></label><label>パスワード<input type="password" minLength={8} value={password} onChange={e=>setPassword(e.target.value)} required/></label><button className="primary-button">{mode==="login"?"ログイン":"登録"}</button></form>{message&&<p>{message}</p>}<button className="text-button" onClick={()=>setMode(mode==="login"?"signup":"login")}>{mode==="login"?"初めての方はこちら":"ログインへ戻る"}</button></div><style jsx>{`.auth-card{max-width:470px;margin:40px auto;background:#fffefa;border:1px solid #e5e1d8;border-radius:14px;padding:36px}.auth-card h1{margin:8px 0}.auth-card>p{color:#6f7772;font-size:12px}.auth-card form{display:grid;gap:15px;margin-top:25px}.auth-card label{display:grid;gap:6px;font-size:11px}.auth-card input{border:1px solid #dcd9d1;border-radius:7px;padding:12px}.text-button{border:0;background:none;color:#1e6656;margin-top:15px;cursor:pointer}`}</style></main>
+}
