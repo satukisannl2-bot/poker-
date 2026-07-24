@@ -7,6 +7,7 @@ import { AuthProvider } from "@/components/auth-provider";
 export const metadata: Metadata = {
   title: "RiverNote — ポーカー復習ノート",
   description: "PokerCraftのハンド履歴を、対戦後に振り返るための学習ツール",
+  robots: { index: false, follow: false },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
