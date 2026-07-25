@@ -22,3 +22,58 @@ describe("PokerCraft CSV compatibility", () => {
     expect(hands[0].strategyContext?.tableSize).toBe(7);
   });
 });
+
+describe("GGPoker text hand history compatibility", () => {
+  it("parses each hand, actual seats, hero cards, position, board and actions", async () => {
+    const history = `Poker Hand #TM6219737427: Tournament #300468440, Bounty Hunters Special $2.50 [7-Max] Hold'em No Limit - Level1(50/100(15)) - 2026/07/25 20:38:26
+Table '60' 7-max Seat #7 is the button
+Seat 1: P1 (10,130 in chips)
+Seat 3: P3 (9,555 in chips)
+Seat 4: P4 (9,170 in chips)
+Seat 5: Hero (10,045 in chips)
+Seat 6: P6 (11,385 in chips)
+Seat 7: P7 (9,820 in chips)
+Hero: posts the ante 15
+P1: posts small blind 50
+P3: posts big blind 100
+*** HOLE CARDS ***
+Dealt to P1
+Dealt to P3
+Dealt to P4
+Dealt to Hero [Kc Js]
+Dealt to P6
+Dealt to P7
+P4: raises 100 to 200
+Hero: calls 200
+P6: folds
+P7: calls 200
+P1: folds
+P3: folds
+*** FLOP *** [Qs Th 8h]
+P4: bets 420
+Hero: calls 420
+P7: folds
+*** TURN *** [Qs Th 8h] [9h]
+P4: checks
+Hero: checks
+*** RIVER *** [Qs Th 8h 9h] [4h]
+*** SHOWDOWN ***
+Hero collected 1,500 from pot
+*** SUMMARY ***
+Total pot 1,500 | Rake 0
+Board [Qs Th 8h 9h 4h]`;
+    const hands = await parsePokerCraftFile(new File([history], "gg.txt", { type: "text/plain" }));
+    expect(hands).toHaveLength(1);
+    expect(hands[0]).toMatchObject({
+      id: "TM6219737427",
+      tableSize: 6,
+      hero: "Hero",
+      position: "HJ",
+      holeCards: ["K♣", "J♠"],
+      board: ["Q♠", "T♥", "8♥", "9♥", "4♥"],
+      pot: 1500,
+    });
+    expect(hands[0].actions.map((action) => [action.street, action.player, action.type])).toContainEqual(["preflop", "Hero", "call"]);
+    expect(hands[0].actions.map((action) => [action.street, action.player, action.type])).toContainEqual(["flop", "P4", "bet"]);
+  });
+});
