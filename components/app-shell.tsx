@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { AlertTriangle, Award, BarChart3, CreditCard, Gamepad2, Layers3, Menu, Upload, UserRound, X } from "lucide-react";
+import { AlertTriangle, Award, BarChart3, CreditCard, Gamepad2, Home, Layers3, Menu, Share2, Upload, UserRound, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/auth-provider";
 
@@ -14,10 +14,12 @@ const protectedNav = [
   { href: "/good-hands", label: "良かったハンド", icon: Award },
 ];
 const publicNav = [
+  { href: "/", label: "ホーム", icon: Home },
   { href: "/pricing", label: "料金プラン", icon: CreditCard },
+  { href: "/affiliate", label: "紹介プログラム", icon: Share2 },
   { href: "/account", label: "アカウント", icon: UserRound },
 ];
-const publicPaths = ["/login", "/pricing", "/terms", "/privacy", "/legal", "/account"];
+const publicPaths = ["/", "/login", "/pricing", "/affiliate", "/terms", "/privacy", "/legal", "/account", "/r"];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
@@ -49,7 +51,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="side-label">POST-GAME REVIEW</div>
         <nav>
           {nav.map((item) => (
-            <Link key={item.href} href={item.href} onClick={() => setOpen(false)} className={path.startsWith(item.href) ? "active" : ""}>
+            <Link key={item.href} href={item.href} onClick={() => setOpen(false)} className={item.href==="/" ? path==="/"?"active":"" : path.startsWith(item.href) ? "active" : ""}>
               <item.icon size={19}/>{item.label}
             </Link>
           ))}
@@ -71,6 +73,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Link href="/terms">利用規約</Link>
             <Link href="/privacy">プライバシー</Link>
             <Link href="/legal">特商法表記</Link>
+            <Link href="/affiliate">広告・紹介について</Link>
           </nav>
           <small>対戦終了後の復習・学習専用サービス</small>
         </footer>
