@@ -10,10 +10,25 @@ export function calculateStats(hands:Hand[]):Stats{
   if(heroPre.some(a=>a.type==="raise"))pfr++;
   if(pre.some((a,i)=>a.player===h.hero&&a.type==="raise"&&pre.slice(0,i).some(x=>x.type==="raise")))threeBet++;
   const lastRaiser=raises[raises.length-1]?.player; const flop=h.actions.filter(a=>a.street==="flop");
-  if(lastRaiser===h.hero&&flop.length){cbetOpp++;const heroIndex=flop.findIndex(a=>a.player===h.hero&&a.type!=="check");if(heroIndex>=0&&(flop[heroIndex].type==="bet"||flop[heroIndex].type==="raise")&&!flop.slice(0,heroIndex).some(a=>a.type==="bet"||a.type==="raise"))cbetMade++;}
-  else if(lastRaiser){const aggressorBet=flop.findIndex(a=>a.player===lastRaiser&&a.type==="bet");if(aggressorBet>=0){const heroResponse=flop.slice(aggressorBet+1).find(a=>a.player===h.hero);if(heroResponse){foldCbetOpp++;if(heroResponse.type==="fold")foldCbet++;}}}
+  if(lastRaiser===h.hero&&flop.some(a=>a.player===h.hero)){
+   cbetOpp++;
+   const heroIndex=flop.findIndex(a=>a.player===h.hero&&a.type!=="check");
+   if(heroIndex>=0&&flop[heroIndex].type==="bet"&&!flop.slice(0,heroIndex).some(a=>a.type==="bet"||a.type==="raise"))cbetMade++;
+  } else if(lastRaiser&&lastRaiser!==h.hero){
+   const aggressorBet=flop.findIndex((a,i)=>
+    a.player===lastRaiser&&a.type==="bet"&&!flop.slice(0,i).some(x=>x.type==="bet"||x.type==="raise")
+   );
+   if(aggressorBet>=0){
+    const responseIndex=flop.findIndex((a,i)=>i>aggressorBet&&a.player===h.hero);
+    const interveningRaise=responseIndex>=0&&flop.slice(aggressorBet+1,responseIndex).some(a=>a.type==="raise");
+    if(responseIndex>=0&&!interveningRaise){
+     foldCbetOpp++;
+     if(flop[responseIndex].type==="fold")foldCbet++;
+    }
+   }
+  }
  }
- return {hands:hands.length,vpip:ratio(vpip,hands.length),pfr:ratio(pfr,hands.length),threeBet:ratio(threeBet,hands.length),cbet:ratio(cbetMade,cbetOpp),foldToCbet:ratio(foldCbet,foldCbetOpp),net:hands.reduce((s,h)=>s+h.result,0)};
+ return {hands:hands.length,vpip:ratio(vpip,hands.length),pfr:ratio(pfr,hands.length),threeBet:ratio(threeBet,hands.length),cbet:ratio(cbetMade,cbetOpp),cbetOpportunities:cbetOpp,foldToCbet:ratio(foldCbet,foldCbetOpp),foldToCbetOpportunities:foldCbetOpp,net:hands.reduce((s,h)=>s+h.result,0)};
 }
 export function calculatePositions(hands:Hand[]):PositionStat[]{
  const order=(['UTG','UTG+1','MP','MP+1','HJ','CO','BTN','SB','BB'] as const); const present=new Set(hands.flatMap(h=>h.seatPositions??[h.position]));

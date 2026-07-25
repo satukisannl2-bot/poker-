@@ -19,5 +19,15 @@ export type Hand = {
   };
 };
 
-export type Stats = { hands: number; vpip: number; pfr: number; threeBet: number; cbet: number; foldToCbet: number; net: number };
+export type Stats = {
+  hands: number;
+  vpip: number;
+  pfr: number;
+  threeBet: number;
+  cbet: number;
+  cbetOpportunities: number;
+  foldToCbet: number;
+  foldToCbetOpportunities: number;
+  net: number;
+};
 export type PositionStat = { position: Position; hands: number; bb100: number; vpip: number; pfr: number };
