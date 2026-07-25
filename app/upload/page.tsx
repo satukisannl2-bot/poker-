@@ -19,7 +19,7 @@ export default function UploadPage(){
   <Link href="/play" className="practice-entry"><span className="practice-entry-icon"><Gamepad2/></span><span><small>LOCAL PRACTICE</small><b>ランダムハンドをプレイする</b><em>2〜9人卓・10または50ゲーム・終了後に自動レビュー</em></span><ArrowRight/></Link>
   <section className="upload-grid"><div className="upload-card"><div className="step-label">01 / UPLOAD</div>
    <div className={file?"dropzone has-file":"dropzone"} onClick={()=>input.current?.click()} onDragOver={e=>e.preventDefault()} onDrop={e=>{e.preventDefault();setFile(e.dataTransfer.files[0]||null)}}>{file?<><CheckCircle2 size={34}/><strong>{file.name}</strong><span>{(file.size/1024).toFixed(1)} KB・準備完了</span></>:<><span className="upload-icon"><UploadCloud/></span><strong>ハンド履歴をドロップ</strong><span>またはクリックしてファイルを選択</span><small>CSV / TXT　最大 10MB</small></>}<input ref={input} type="file" accept=".csv,.txt" hidden onChange={e=>setFile(e.target.files?.[0]||null)}/></div>
-   {user&&<p className="quota-note">今月の残り解析数：<b>{plan.remaining}</b> ハンド（{plan.plan==="standard"?"STANDARD":"FREE"}）</p>}
+   {user&&<p className="quota-note">次回リセットまで：残り <b>{plan.remaining}</b> / {plan.limit} ハンド（FREE）</p>}
    {error&&<p className="error">{error}</p>}<button className="primary-button" disabled={!file||busy} onClick={run}>{busy?"解析中…":user?"解析をはじめる":"ログインして解析する"}<ArrowRight size={18}/></button>
    <div className="demo-divider"><span>または</span></div><button className="demo-button" onClick={loadDemo}><Users size={19}/><span><b>8人卓デモデータを読み込む</b><small>8ポジション・全アクション入り</small></span><ArrowRight size={17}/></button>
   </div>

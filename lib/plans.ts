@@ -1,5 +1,5 @@
 export const PLAN_LIMITS = {
-  free: { name: "FREE", monthlyPrice: 0, analyzedHands: 50 },
+  free: { name: "FREE", monthlyPrice: 0, analyzedHands: 1000 },
   standard: { name: "STANDARD", monthlyPrice: 500, analyzedHands: 2000 },
 } as const;
 

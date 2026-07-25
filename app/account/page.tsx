@@ -27,11 +27,12 @@ export default function Account() {
         <h1>アカウント</h1>
         <dl><dt>メール</dt><dd>{user.email}</dd><dt>プラン</dt><dd><b>{plan.plan === "standard" ? "STANDARD" : "FREE"}</b></dd><dt>契約状態</dt><dd>{plan.subscriptionStatus === "active" ? "有効" : "無料利用中"}</dd></dl>
         <section className="usage-box">
-          <div><strong>今月の解析数</strong><span>{plan.analyzedHands} / {plan.limit} ハンド</span></div>
+          <div><strong>今回の利用期間</strong><span>{plan.analyzedHands} / {plan.limit} ハンド</span></div>
           <i><b style={{ width: `${usageRate}%` }}/></i>
           <small>残り {plan.remaining} ハンド</small>
+          <small>次回リセット：{new Date(`${plan.nextResetAt}T00:00:00Z`).toLocaleDateString("ja-JP", { timeZone: "Asia/Tokyo" })}</small>
         </section>
-        {plan.plan === "standard" ? <button onClick={portal}>契約・支払いを管理</button> : <Link href="/pricing">月額500円にアップグレード</Link>}
+        {plan.plan === "standard" ? <button onClick={portal}>契約・支払いを管理</button> : <Link href="/pricing">無料プランの詳細</Link>}
         <button className="logout" onClick={async () => { await signOut(); location.href = "/login"; }}>ログアウト</button>
       </div>
       <style jsx>{`
@@ -40,7 +41,7 @@ export default function Account() {
         .account-card button,.account-card a{display:block;width:100%;margin-top:12px;border:0;border-radius:7px;padding:13px;background:#1e6656;color:white;text-align:center;cursor:pointer}
         .account-card .logout{background:#e9e9e5;color:#42504b}.usage-box{margin:22px 0;padding:18px;background:#f1f6f3;border-radius:10px}
         .usage-box>div{display:flex;justify-content:space-between;font-size:12px}.usage-box i{display:block;height:7px;background:#dce5e1;border-radius:8px;margin:12px 0 7px;overflow:hidden}
-        .usage-box i b{display:block;height:100%;background:#1e6656}.usage-box small{color:#72807a}
+        .usage-box i b{display:block;height:100%;background:#1e6656}.usage-box small{display:block;color:#72807a;margin-top:4px}
       `}</style>
     </main>
   );

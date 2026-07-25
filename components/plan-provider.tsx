@@ -11,6 +11,7 @@ type PlanState = {
   analyzedHands: number;
   limit: number;
   remaining: number;
+  nextResetAt: string;
   loading: boolean;
   refresh: () => Promise<void>;
   consumeAnalysis: (count: number) => Promise<{ ok: boolean; error?: string }>;
@@ -18,9 +19,24 @@ type PlanState = {
 
 const PlanContext = createContext<PlanState | null>(null);
 
-function monthStart() {
+function addMonthsClamped(date: Date, months: number) {
+  const targetYear = date.getUTCFullYear() + Math.floor((date.getUTCMonth() + months) / 12);
+  const targetMonth = (date.getUTCMonth() + months) % 12;
+  const lastDay = new Date(Date.UTC(targetYear, targetMonth + 1, 0)).getUTCDate();
+  return new Date(Date.UTC(targetYear, targetMonth, Math.min(date.getUTCDate(), lastDay)));
+}
+
+function usageCycle(createdAt?: string) {
+  const registered = createdAt ? new Date(createdAt) : new Date();
   const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
+  let months = (now.getUTCFullYear() - registered.getUTCFullYear()) * 12 + now.getUTCMonth() - registered.getUTCMonth();
+  let start = addMonthsClamped(registered, Math.max(0, months));
+  if (start > now) start = addMonthsClamped(registered, Math.max(0, --months));
+  const end = addMonthsClamped(registered, Math.max(0, months) + 1);
+  return {
+    start: start.toISOString().slice(0, 10),
+    end: end.toISOString().slice(0, 10),
+  };
 }
 
 export function PlanProvider({ children }: { children: React.ReactNode }) {
@@ -29,6 +45,7 @@ export function PlanProvider({ children }: { children: React.ReactNode }) {
   const [subscriptionStatus, setSubscriptionStatus] = useState("inactive");
   const [analyzedHands, setAnalyzedHands] = useState(0);
   const [loading, setLoading] = useState(true);
+  const cycle = useMemo(() => usageCycle(user?.created_at), [user?.created_at]);
 
   const refresh = useCallback(async () => {
     if (!user || !supabase) {
@@ -41,13 +58,13 @@ export function PlanProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
     const [{ data: profile }, { data: usage }] = await Promise.all([
       supabase.from("profiles").select("plan,subscription_status").eq("id", user.id).maybeSingle(),
-      supabase.from("usage_monthly").select("analyzed_hands").eq("user_id", user.id).eq("month", monthStart()).maybeSingle(),
+      supabase.from("usage_monthly").select("analyzed_hands").eq("user_id", user.id).eq("month", cycle.start).maybeSingle(),
     ]);
     setPlan(normalizePlan(profile?.plan));
     setSubscriptionStatus(profile?.subscription_status ?? "inactive");
     setAnalyzedHands(usage?.analyzed_hands ?? 0);
     setLoading(false);
-  }, [user]);
+  }, [user, cycle.start]);
 
   useEffect(() => { void refresh(); }, [refresh]);
 
@@ -58,7 +75,7 @@ export function PlanProvider({ children }: { children: React.ReactNode }) {
     const result = Array.isArray(data) ? data[0] : data;
     if (!result?.allowed) {
       setAnalyzedHands(result?.used_hands ?? analyzedHands);
-      return { ok: false, error: `今月の解析上限（${result?.limit_hands ?? PLAN_LIMITS[plan].analyzedHands}ハンド）に達します。` };
+      return { ok: false, error: `次回リセットまでの解析上限（${result?.limit_hands ?? PLAN_LIMITS[plan].analyzedHands}ハンド）に達します。` };
     }
     setAnalyzedHands(result.used_hands);
     return { ok: true };
@@ -71,10 +88,11 @@ export function PlanProvider({ children }: { children: React.ReactNode }) {
     analyzedHands,
     limit,
     remaining: Math.max(0, limit - analyzedHands),
+    nextResetAt: cycle.end,
     loading,
     refresh,
     consumeAnalysis,
-  }), [plan, subscriptionStatus, analyzedHands, limit, loading, refresh, consumeAnalysis]);
+  }), [plan, subscriptionStatus, analyzedHands, limit, loading, refresh, consumeAnalysis, cycle.end]);
 
   return <PlanContext.Provider value={value}>{children}</PlanContext.Provider>;
 }
