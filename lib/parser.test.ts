@@ -74,6 +74,7 @@ Board [Qs Th 8h 9h 4h]`;
       pot: 1500,
     });
     expect(hands[0].actions.map((action) => [action.street, action.player, action.type])).toContainEqual(["preflop", "Hero", "call"]);
-    expect(hands[0].actions.map((action) => [action.street, action.player, action.type])).toContainEqual(["flop", "P4", "bet"]);
+    expect(hands[0].actions.map((action) => [action.street, action.player, action.type])).toContainEqual(["flop", "UTG", "bet"]);
+    expect(hands[0].actions.some((action) => /^P\d+$/.test(action.player))).toBe(false);
   });
 });

@@ -43,6 +43,8 @@ const actionAdvice=(hand:Hand,action:Hand["actions"][number]|undefined,actions:H
 const completePreflopActions=(hand:Hand)=>{
  const preflop=hand.actions.filter(a=>a.street==="preflop"); if(!preflop.length)return hand.actions;
  const seats=hand.seatPositions??positionsForTable(hand.tableSize??8); const used=new Set<number>(); const firstRound:Hand["actions"]=[];
+ const recognizedPlayers=new Set<string>([hand.hero,...seats]);
+ if(preflop.some(action=>!recognizedPlayers.has(action.player)))return hand.actions;
  for(const position of seats){const player=position===hand.position?hand.hero:position;const index=preflop.findIndex((a,i)=>!used.has(i)&&a.player===player);if(index>=0){firstRound.push(preflop[index]);used.add(index)}else firstRound.push({street:"preflop",player,type:"fold"})}
  const remaining=preflop.filter((_,i)=>!used.has(i)); return [...firstRound,...remaining,...hand.actions.filter(a=>a.street!=="preflop")];
 };

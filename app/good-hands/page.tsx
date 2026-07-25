@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { Award, Bookmark, ChevronRight, Sparkles } from "lucide-react";
 import { usePoker } from "@/components/poker-provider";
-import { useHandFilters } from "@/components/hand-filters";
+import { HandSourceBadge, useHandFilters } from "@/components/hand-filters";
 
 export default function GoodHands(){
   const {hands,saved,toggleSaved}=usePoker();
@@ -15,7 +15,7 @@ export default function GoodHands(){
     <div className="section-intro"><div><span className="eyebrow">POSITIVE REVIEW</span><h2>再現したい判断</h2></div><p>間違いだけでなく、正しい判断の理由も覚えることでプレイが安定します。</p></div>
     <section className="hand-list good-list">{rows.map((h,i)=><article className="hand-card good-card" key={h.id}>
       <div className="hand-rank">{String(i+1).padStart(2,"0")}</div><div className="cards">{h.holeCards.map(c=><span key={c} className={/[♥♦]/.test(c)?"red":""}>{c}</span>)}</div>
-      <div className="hand-info"><div><b>{h.position}・{h.actualAction}の好判断</b><span className="tag good-tag">BASELINE MATCH</span></div><small>{h.playedAt} ・ {h.stakes}</small><p>{h.explanation||"基準戦略とよく一致したアクションです。"}</p></div>
+      <div className="hand-info"><div><b>{h.position}・{h.actualAction}の好判断</b><span className="tag good-tag">BASELINE MATCH</span><HandSourceBadge hand={h}/></div><small>{h.playedAt} ・ {h.stakes}</small><p>{h.explanation||"基準戦略とよく一致したアクションです。"}</p></div>
       <div className="score good-score"><span>STRATEGY SCORE</span><strong>{h.score}</strong><i style={{"--score":`${h.score}%`} as React.CSSProperties}/></div>
       <button className={saved.includes(h.id)?"save active":"save"} onClick={()=>toggleSaved(h.id)} aria-label="復習リストに保存"><Bookmark size={19} fill={saved.includes(h.id)?"currentColor":"none"}/></button><Link href={`/hands/${h.id}`} className="detail-link">詳細を見る<ChevronRight size={18}/></Link>
     </article>)}</section>

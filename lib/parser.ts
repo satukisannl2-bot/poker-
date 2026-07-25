@@ -116,20 +116,21 @@ function parseGgHand(block: string, index: number): Hand | null {
     if (!inActions || line.startsWith("Dealt to ") || line.startsWith("Uncalled bet") || line.includes(": shows ")) continue;
     const match = line.match(/^(.+?): (folds|checks|calls [\d,]+|bets [\d,]+|raises [\d,]+ to [\d,]+)/);
     if (!match) continue;
-    const player = match[1], phrase = match[2], paid = committed.get(player) ?? 0;
+    const rawPlayer = match[1], player = rawPlayer === hero ? hero : (positionByPlayer.get(rawPlayer) ?? rawPlayer);
+    const phrase = match[2], paid = committed.get(rawPlayer) ?? 0;
     if (phrase === "folds") actions.push({ street, player, type: "fold" });
     else if (phrase === "checks") actions.push({ street, player, type: "check" });
     else if (phrase.startsWith("calls")) {
       const amount = numberFrom(phrase.match(/calls ([\d,]+)/)![1]), toAmount = paid + amount;
-      committed.set(player, toAmount);
+      committed.set(rawPlayer, toAmount);
       actions.push({ street, player, type: "call", amount, toAmount });
     } else if (phrase.startsWith("bets")) {
       const amount = numberFrom(phrase.match(/bets ([\d,]+)/)![1]);
-      committed.set(player, amount);
+      committed.set(rawPlayer, amount);
       actions.push({ street, player, type: "bet", amount, toAmount: amount });
     } else {
       const toAmount = numberFrom(phrase.match(/to ([\d,]+)/)![1]), amount = Math.max(0, toAmount - paid);
-      committed.set(player, toAmount);
+      committed.set(rawPlayer, toAmount);
       actions.push({ street, player, type: "raise", amount, toAmount });
     }
   }
