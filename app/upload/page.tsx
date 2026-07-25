@@ -12,8 +12,8 @@ import { usePlan } from "@/components/plan-provider";
 export default function UploadPage(){
  const input=useRef<HTMLInputElement>(null); const router=useRouter(); const {setHands}=usePoker(); const {user}=useAuth(); const plan=usePlan();
  const [file,setFile]=useState<File|null>(null); const [busy,setBusy]=useState(false); const [error,setError]=useState("");
- const run=async()=>{if(!file)return;if(!user){router.push("/login");return}setBusy(true);setError("");try{const parsed=await parsePokerCraftFile(file);const quota=await plan.consumeAnalysis(parsed.length);if(!quota.ok){setError(quota.error??"今月の解析上限を確認してください。");setBusy(false);return}setHands(parsed);router.push("/dashboard");}catch(e){setError(e instanceof Error?e.message:"解析できませんでした");setBusy(false);}};
- const loadDemo=()=>{setHands(demo8MaxHands.map(h=>({...h,id:h.id.replace("DEMO8-","IMPORT-DEMO8-")})));router.push("/dashboard")};
+ const run=async()=>{if(!file)return;if(!user){router.push("/login");return}setBusy(true);setError("");try{const parsed=await parsePokerCraftFile(file);const saved=await setHands(parsed,{source:"user",persist:true,countQuota:true});if(!saved.ok){setError(saved.error??"保存できませんでした。");setBusy(false);return}await plan.refresh();router.push("/dashboard");}catch(e){setError(e instanceof Error?e.message:"解析できませんでした");setBusy(false);}};
+ const loadDemo=async()=>{if(!user){router.push("/login");return}setBusy(true);setError("");const result=await setHands(demo8MaxHands.map(h=>({...h,id:h.id.replace("DEMO8-","IMPORT-DEMO8-")})),{source:"demo",persist:false});if(!result.ok){setError(result.error??"デモデータを読み込めませんでした。");setBusy(false);return}router.push("/dashboard")};
  return <main>
   <div className="page-heading"><div><span className="eyebrow">SESSION IMPORT</span><h1>プレイを、次の強さに変える。</h1><p>PokerCraftの履歴を読み込んで、対戦後の判断を静かに振り返ります。</p></div><span className="privacy"><ShieldCheck size={17}/>データは端末内で解析</span></div>
   <Link href="/play" className="practice-entry"><span className="practice-entry-icon"><Gamepad2/></span><span><small>LOCAL PRACTICE</small><b>ランダムハンドをプレイする</b><em>2〜9人卓・10または50ゲーム・終了後に自動レビュー</em></span><ArrowRight/></Link>

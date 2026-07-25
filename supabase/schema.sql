@@ -8,7 +8,8 @@ create table sessions (
   created_at timestamptz default now()
 );
 create table hands (
-  id text primary key,
+  storage_id uuid primary key default gen_random_uuid(),
+  id text not null,
   session_id uuid references sessions(id) on delete cascade,
   user_id uuid references auth.users(id) on delete cascade,
   played_at timestamptz, position text, stakes text,
@@ -19,6 +20,7 @@ create table hands (
   is_saved boolean default false, raw_data jsonb,
   created_at timestamptz default now()
 );
+alter table hands add constraint hands_user_hand_unique unique (user_id, id);
 alter table sessions enable row level security;
 alter table hands enable row level security;
 create policy "own sessions" on sessions for all using (auth.uid() = user_id) with check (auth.uid() = user_id);

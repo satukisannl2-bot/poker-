@@ -29,5 +29,8 @@ export type Stats = {
   foldToCbet: number;
   foldToCbetOpportunities: number;
   net: number;
+  netBb: number;
+  winRateBb100: number;
+  averageScore: number;
 };
 export type PositionStat = { position: Position; hands: number; bb100: number; vpip: number; pfr: number };

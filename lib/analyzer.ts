@@ -1,6 +1,19 @@
 import { Hand, PositionStat, Stats } from "./types";
 const round=(n:number)=>Math.round(n*10)/10;
 const ratio=(n:number,d:number)=>d?round(n/d*100):0;
+const bigBlind=(stakes:string)=>{
+ const values=stakes.match(/\d[\d,.]*/g)?.map(value=>Number(value.replace(/,/g,""))).filter(Number.isFinite)??[];
+ return values.length>=2&&values[values.length-1]>0?values[values.length-1]:100;
+};
+
+export function sessionGrade(averageScore:number){
+ if(averageScore>=95)return "A+";
+ if(averageScore>=90)return "A";
+ if(averageScore>=85)return "B+";
+ if(averageScore>=75)return "B";
+ if(averageScore>=65)return "C";
+ return "D";
+}
 
 export function calculateStats(hands:Hand[]):Stats{
  let vpip=0,pfr=0,threeBet=0,cbetOpp=0,cbetMade=0,foldCbetOpp=0,foldCbet=0;
@@ -28,9 +41,12 @@ export function calculateStats(hands:Hand[]):Stats{
    }
   }
  }
- return {hands:hands.length,vpip:ratio(vpip,hands.length),pfr:ratio(pfr,hands.length),threeBet:ratio(threeBet,hands.length),cbet:ratio(cbetMade,cbetOpp),cbetOpportunities:cbetOpp,foldToCbet:ratio(foldCbet,foldCbetOpp),foldToCbetOpportunities:foldCbetOpp,net:hands.reduce((s,h)=>s+h.result,0)};
+ const net=hands.reduce((sum,hand)=>sum+hand.result,0);
+ const netBb=round(hands.reduce((sum,hand)=>sum+hand.result/bigBlind(hand.stakes),0));
+ const averageScore=round(hands.reduce((sum,hand)=>sum+hand.score,0)/(hands.length||1));
+ return {hands:hands.length,vpip:ratio(vpip,hands.length),pfr:ratio(pfr,hands.length),threeBet:ratio(threeBet,hands.length),cbet:ratio(cbetMade,cbetOpp),cbetOpportunities:cbetOpp,foldToCbet:ratio(foldCbet,foldCbetOpp),foldToCbetOpportunities:foldCbetOpp,net,netBb,winRateBb100:hands.length?round(netBb/hands.length*100):0,averageScore};
 }
 export function calculatePositions(hands:Hand[]):PositionStat[]{
  const order=(['UTG','UTG+1','MP','MP+1','HJ','CO','BTN','SB','BB'] as const); const present=new Set(hands.flatMap(h=>h.seatPositions??[h.position]));
- return order.filter(position=>present.has(position)).map(position=>{const rows=hands.filter(h=>h.position===position),stats=calculateStats(rows);return {position,hands:rows.length,bb100:rows.length?round(rows.reduce((s,h)=>s+h.result,0)/100/rows.length*100):0,vpip:stats.vpip,pfr:stats.pfr};});
+ return order.filter(position=>present.has(position)).map(position=>{const rows=hands.filter(h=>h.position===position),stats=calculateStats(rows);return {position,hands:rows.length,bb100:stats.winRateBb100,vpip:stats.vpip,pfr:stats.pfr};});
 }

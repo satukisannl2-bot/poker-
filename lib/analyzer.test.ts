@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calculateStats } from "./analyzer";
+import { calculateStats, sessionGrade } from "./analyzer";
 import { Hand, HandAction } from "./types";
 
 function hand(actions: HandAction[]): Hand {
@@ -63,5 +63,32 @@ describe("Fold to CBET", () => {
     ])]);
     expect(stats.foldToCbetOpportunities).toBe(0);
     expect(stats.foldToCbet).toBe(0);
+  });
+});
+
+describe("session summary", () => {
+  it("calculates BB profit, BB/100 and average decision score from the hands", () => {
+    const first = hand([]);
+    first.stakes = "50 / 100";
+    first.result = 250;
+    first.score = 90;
+    const second = hand([]);
+    second.stakes = "100 / 200";
+    second.result = -100;
+    second.score = 80;
+    const stats = calculateStats([first, second]);
+    expect(stats.net).toBe(150);
+    expect(stats.netBb).toBe(2);
+    expect(stats.winRateBb100).toBe(100);
+    expect(stats.averageScore).toBe(85);
+    expect(sessionGrade(stats.averageScore)).toBe("B+");
+  });
+
+  it("returns neutral values for an empty session", () => {
+    const stats = calculateStats([]);
+    expect(stats.hands).toBe(0);
+    expect(stats.netBb).toBe(0);
+    expect(stats.winRateBb100).toBe(0);
+    expect(stats.averageScore).toBe(0);
   });
 });
