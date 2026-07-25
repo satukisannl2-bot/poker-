@@ -20,7 +20,7 @@ const publicNav = [
   { href: "/affiliate", label: "紹介プログラム", icon: Share2 },
   { href: "/account", label: "アカウント", icon: UserRound },
 ];
-const publicPaths = ["/", "/login", "/pricing", "/affiliate", "/terms", "/privacy", "/legal", "/account", "/r"];
+const publicPaths = ["/", "/login", "/pricing", "/affiliate", "/terms", "/privacy", "/account", "/r"];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
@@ -85,7 +85,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <nav aria-label="法的情報">
             <Link href="/terms">利用規約</Link>
             <Link href="/privacy">プライバシー</Link>
-            <Link href="/legal">特商法表記</Link>
             <Link href="/affiliate">広告・紹介について</Link>
           </nav>
           <small>対戦終了後の復習・学習専用サービス</small>

@@ -43,7 +43,7 @@ export default function Pricing() {
         <h2>学習専用サービスです</h2>
         <p>賭博、入出金、賞金、ベット仲介、対戦中のカード読み取り、リアルタイム支援は提供しません。推奨頻度やEVは対戦後の学習用参考値です。</p>
       </section>
-      <div className="pricing-links"><Link href="/terms">利用規約</Link><Link href="/privacy">プライバシーポリシー</Link><Link href="/legal">特定商取引法に基づく表記</Link></div>
+      <div className="pricing-links"><Link href="/terms">利用規約</Link><Link href="/privacy">プライバシーポリシー</Link></div>
       <style jsx>{`
         .free-plan{position:relative;max-width:540px;background:#fffefa;border:2px solid #1e6656;border-radius:16px;padding:34px;display:grid;gap:16px;box-shadow:0 16px 38px #173d3414}
         .recommended{position:absolute;right:20px;top:20px;display:flex;gap:5px;align-items:center;color:#1e6656;font-size:11px;font-weight:700}
