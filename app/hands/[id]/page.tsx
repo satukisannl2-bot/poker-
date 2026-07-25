@@ -48,11 +48,26 @@ const completePreflopActions=(hand:Hand)=>{
  for(const position of seats){const player=position===hand.position?hand.hero:position;const index=preflop.findIndex((a,i)=>!used.has(i)&&a.player===player);if(index>=0){firstRound.push(preflop[index]);used.add(index)}else firstRound.push({street:"preflop",player,type:"fold"})}
  const remaining=preflop.filter((_,i)=>!used.has(i)); return [...firstRound,...remaining,...hand.actions.filter(a=>a.street!=="preflop")];
 };
+const normalizeLegacyPlayerActions=(hand:Hand):Hand["actions"]=>{
+ const seats=hand.seatPositions??positionsForTable(hand.tableSize??8);
+ const recognized=new Set<string>([hand.hero,...seats]);
+ if(hand.actions.every(action=>recognized.has(action.player)))return hand.actions;
+ const firstActionOrder:string[]=[];
+ for(const action of hand.actions.filter(action=>action.street==="preflop")){
+  if(!firstActionOrder.includes(action.player))firstActionOrder.push(action.player);
+ }
+ const playerToPosition=new Map<string,string>();
+ firstActionOrder.forEach((player,index)=>{
+  const expected=seats[index];
+  if(player!==hand.hero&&expected&&expected!==hand.position)playerToPosition.set(player,expected);
+ });
+ return hand.actions.map(action=>({...action,player:action.player===hand.hero?hand.hero:(playerToPosition.get(action.player)??action.player)}));
+};
 function ChipStack({amount,pot=false}:{amount:number;pot?:boolean}){return <div className={pot?"wager-chip pot-chips":"wager-chip"}><span className="chip-art"><i/><i/><i/></span>{!pot&&<b>{amount.toLocaleString()}</b>}</div>}
 
 export default function HandDetail(){
  const {id}=useParams<{id:string}>(); const {hands,saved,toggleSaved}=usePoker(); const h=hands.find(x=>x.id===id)||hands[0];
- const replayActions=h?completePreflopActions(h):[]; const [step,setStep]=useState(0); const [playing,setPlaying]=useState(false);
+ const replayActions=h?completePreflopActions({...h,actions:normalizeLegacyPlayerActions(h)}):[]; const [step,setStep]=useState(0); const [playing,setPlaying]=useState(false);
  useEffect(()=>{setStep(0);setPlaying(false)},[id]);
  useEffect(()=>{if(!playing||!h)return;const timer=setInterval(()=>setStep(s=>{if(s>=replayActions.length){setPlaying(false);return s}return s+1}),900);return()=>clearInterval(timer)},[playing,h,replayActions.length]);
  if(!h)return null;
