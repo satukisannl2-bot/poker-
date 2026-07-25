@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { Hand } from "@/lib/types";
 import { useAuth } from "@/components/auth-provider";
+import { usePlan } from "@/components/plan-provider";
 import { supabase } from "@/lib/supabase";
 
 type DataSource = "empty" | "user" | "demo" | "practice";
@@ -39,6 +40,7 @@ const rowFor = (hand: Hand, userId: string) => ({
 
 export function PokerProvider({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useAuth();
+  const { refresh: refreshPlan } = usePlan();
   const [hands, setHandsState] = useState<Hand[]>([]);
   const [saved, setSaved] = useState<string[]>([]);
   const [dataSource, setDataSource] = useState<DataSource>("empty");
@@ -123,6 +125,7 @@ export function PokerProvider({ children }: { children: React.ReactNode }) {
         if (error) return { ok: false, error: `保存できませんでした：${error.message}` };
         const result = Array.isArray(data) ? data[0] : data;
         if (!result?.allowed) return { ok: false, error: `次回リセットまでの解析上限（${result?.limit_hands ?? 500}ハンド）を超えます。` };
+        await refreshPlan();
       } else {
         const { error } = await supabase.from("hands").upsert(nextHands.map(hand => rowFor(hand, user.id)), { onConflict: "user_id,id" });
         if (error) return { ok: false, error: `保存できませんでした：${error.message}` };
@@ -136,7 +139,7 @@ export function PokerProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem(`rivernote:${user.id}:source`, nextHands.length ? source : "empty");
     } catch {}
     return { ok: true };
-  }, [user]);
+  }, [user, refreshPlan]);
 
   const toggleSaved = useCallback((id: string) => {
     if (!user) return;
