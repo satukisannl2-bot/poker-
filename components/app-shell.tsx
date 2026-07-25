@@ -20,7 +20,7 @@ const publicNav = [
   { href: "/affiliate", label: "紹介プログラム", icon: Share2 },
   { href: "/account", label: "アカウント", icon: UserRound },
 ];
-const publicPaths = ["/", "/login", "/pricing", "/affiliate", "/terms", "/privacy", "/account", "/r"];
+const publicPaths = ["/", "/login", "/pricing", "/affiliate", "/terms", "/privacy", "/legal", "/account", "/r"];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
