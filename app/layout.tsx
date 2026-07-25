@@ -4,6 +4,7 @@ import { AppShell } from "@/components/app-shell";
 import { PokerProvider } from "@/components/poker-provider";
 import { AuthProvider } from "@/components/auth-provider";
 import { PlanProvider } from "@/components/plan-provider";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "RiverNote — ポーカー復習ノート",
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             </PokerProvider>
           </PlanProvider>
         </AuthProvider>
+        <Analytics />
       </body>
     </html>
   );
