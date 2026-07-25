@@ -122,7 +122,7 @@ export function PokerProvider({ children }: { children: React.ReactNode }) {
         const { data, error } = await supabase.rpc("save_analysis_batch", { hand_rows: nextHands });
         if (error) return { ok: false, error: `保存できませんでした：${error.message}` };
         const result = Array.isArray(data) ? data[0] : data;
-        if (!result?.allowed) return { ok: false, error: `次回リセットまでの解析上限（${result?.limit_hands ?? 1000}ハンド）を超えます。` };
+        if (!result?.allowed) return { ok: false, error: `次回リセットまでの解析上限（${result?.limit_hands ?? 500}ハンド）を超えます。` };
       } else {
         const { error } = await supabase.from("hands").upsert(nextHands.map(hand => rowFor(hand, user.id)), { onConflict: "user_id,id" });
         if (error) return { ok: false, error: `保存できませんでした：${error.message}` };

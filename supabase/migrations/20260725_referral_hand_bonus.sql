@@ -32,7 +32,7 @@ begin
     elapsed_months := greatest(0, elapsed_months - 1);
   end if;
   current_month := (registered_at + make_interval(months => elapsed_months))::date;
-  plan_limit := case when current_plan in ('standard','pro') then 2000 else 1000 end;
+  plan_limit := case when current_plan in ('standard','pro') then 2000 else 500 end;
 
   insert into public.usage_monthly(user_id,month,analyzed_hands,bonus_hands_used)
   values(current_user_id,current_month,0,0) on conflict (user_id,month) do nothing;
@@ -80,7 +80,7 @@ begin
     + extract(month from now())::integer-extract(month from registered_at)::integer);
   if registered_at+make_interval(months=>elapsed_months)>now() then elapsed_months:=greatest(0,elapsed_months-1); end if;
   current_cycle := (registered_at+make_interval(months=>elapsed_months))::date;
-  plan_limit := case when current_plan in ('standard','pro') then 2000 else 1000 end;
+  plan_limit := case when current_plan in ('standard','pro') then 2000 else 500 end;
 
   insert into public.usage_monthly(user_id,month,analyzed_hands,bonus_hands_used)
   values(current_user_id,current_cycle,0,0) on conflict(user_id,month) do nothing;

@@ -88,7 +88,7 @@ begin
     elapsed_months := greatest(0, elapsed_months - 1);
   end if;
   current_month := (registered_at + make_interval(months => elapsed_months))::date;
-  plan_limit := case when current_plan in ('standard','pro') then 2000 else 1000 end;
+  plan_limit := case when current_plan in ('standard','pro') then 2000 else 500 end;
   insert into public.usage_monthly(user_id,month,analyzed_hands) values(current_user_id,current_month,0)
   on conflict (user_id,month) do nothing;
   select analyzed_hands into current_usage from public.usage_monthly

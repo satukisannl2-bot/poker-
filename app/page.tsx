@@ -31,7 +31,7 @@ export default function Home() {
     </section>
     <section className="landing-detail">
       <div><span className="eyebrow">WHY RIVERNOTE</span><h2>間違いだけでなく、良い判断も残す</h2><p>改善が必要なハンドと、基準戦略に近い良い判断を分けて保存。ハンドリプレイヤーでアクションを順番に再生し、次に同じ場面が来たときの考え方を整理できます。</p></div>
-      <ul>{["登録日から毎月1,000ハンドまで無料","スマートフォン対応","ユーザーごとのクラウド保存","GTOベースの学習用参考値"].map(item=><li key={item}><CheckCircle2 size={17}/>{item}</li>)}</ul>
+      <ul>{["登録日から毎月500ハンドまで無料","紹介ボーナスは月次リセットなし","スマートフォン対応","ユーザーごとのクラウド保存"].map(item=><li key={item}><CheckCircle2 size={17}/>{item}</li>)}</ul>
     </section>
     <section className="landing-cta"><h2>まずは無料で1ハンドから</h2><p>登録後、自分のハンド履歴だけが表示されます。</p><Link href="/login?mode=signup">無料アカウントを作成</Link></section>
     <style jsx>{`

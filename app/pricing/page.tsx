@@ -5,7 +5,8 @@ import { Check, ShieldCheck, Sparkles } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
 
 const features = [
-  "登録日を基準に毎月1,000ハンドまで解析",
+  "登録日を基準に毎月500ハンドまで解析",
+  "紹介ボーナスは月次リセットなし",
   "VPIP・PFR・3BET・CBETなどの統計",
   "改善ハンドと良かったハンドの自動抽出",
   "ハンドリプレイヤーと判断ガイド",
