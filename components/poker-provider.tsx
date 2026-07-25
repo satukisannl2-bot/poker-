@@ -90,7 +90,11 @@ export function PokerProvider({ children }: { children: React.ReactNode }) {
         if (cloud.length) {
           setHandsState(cloud);
           setSaved((data ?? []).filter(row => row.is_saved).map(row => (row.raw_data as Hand).id));
-          setDataSource(cloud.some(hand => hand.id.startsWith("PRACTICE-")) ? "practice" : "user");
+          setDataSource(
+            cloud.every(hand => hand.id.startsWith("IMPORT-DEMO8-")) ? "demo"
+              : cloud.every(hand => hand.id.startsWith("PRACTICE-")) ? "practice"
+                : "user"
+          );
         } else if (localSource === "demo" && localHands.length) {
           setHandsState(localHands);
           setSaved([]);
