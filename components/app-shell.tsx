@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { AlertTriangle, Award, BarChart3, CreditCard, Gamepad2, Home, Layers3, Menu, Share2, Upload, UserRound, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/auth-provider";
+import { AdSlot } from "@/components/ad-slot";
 
 const protectedNav = [
   { href: "/play", label: "ゲームをプレイ", icon: Gamepad2 },
@@ -67,6 +68,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <span>RiverNote</span>
         </header>
         {pageContent}
+        <AdSlot slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_ID ?? ""}/>
         <footer className="site-footer">
           <span>© 2026 RiverNote</span>
           <nav aria-label="法的情報">

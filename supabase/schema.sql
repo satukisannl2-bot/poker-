@@ -34,12 +34,14 @@ create table profiles (
   stripe_customer_id text unique, stripe_subscription_id text unique,
   subscription_status text not null default 'inactive', current_period_end timestamptz,
   referral_code text unique default upper(substr(replace(gen_random_uuid()::text,'-',''),1,8)),
+  bonus_hands_balance integer not null default 0 check (bonus_hands_balance >= 0),
   referred_by uuid references profiles(id), created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 create table usage_monthly (
   user_id uuid references auth.users(id) on delete cascade, month date not null,
   analyzed_hands integer not null default 0, practice_hands integer not null default 0,
+  bonus_hands_used integer not null default 0 check (bonus_hands_used >= 0),
   primary key (user_id, month)
 );
 create table affiliate_events (

@@ -44,6 +44,8 @@ export function PlanProvider({ children }: { children: React.ReactNode }) {
   const [plan, setPlan] = useState<PlanKey>("free");
   const [subscriptionStatus, setSubscriptionStatus] = useState("inactive");
   const [analyzedHands, setAnalyzedHands] = useState(0);
+  const [bonusBalance, setBonusBalance] = useState(0);
+  const [bonusUsed, setBonusUsed] = useState(0);
   const [loading, setLoading] = useState(true);
   const cycle = useMemo(() => usageCycle(user?.created_at), [user?.created_at]);
 
@@ -57,12 +59,14 @@ export function PlanProvider({ children }: { children: React.ReactNode }) {
     }
     setLoading(true);
     const [{ data: profile }, { data: usage }] = await Promise.all([
-      supabase.from("profiles").select("plan,subscription_status").eq("id", user.id).maybeSingle(),
-      supabase.from("usage_monthly").select("analyzed_hands").eq("user_id", user.id).eq("month", cycle.start).maybeSingle(),
+      supabase.from("profiles").select("plan,subscription_status,bonus_hands_balance").eq("id", user.id).maybeSingle(),
+      supabase.from("usage_monthly").select("analyzed_hands,bonus_hands_used").eq("user_id", user.id).eq("month", cycle.start).maybeSingle(),
     ]);
     setPlan(normalizePlan(profile?.plan));
     setSubscriptionStatus(profile?.subscription_status ?? "inactive");
     setAnalyzedHands(usage?.analyzed_hands ?? 0);
+    setBonusBalance(profile?.bonus_hands_balance ?? 0);
+    setBonusUsed(usage?.bonus_hands_used ?? 0);
     setLoading(false);
   }, [user, cycle.start]);
 
@@ -78,10 +82,11 @@ export function PlanProvider({ children }: { children: React.ReactNode }) {
       return { ok: false, error: `次回リセットまでの解析上限（${result?.limit_hands ?? PLAN_LIMITS[plan].analyzedHands}ハンド）に達します。` };
     }
     setAnalyzedHands(result.used_hands);
+    await refresh();
     return { ok: true };
-  }, [session, plan, analyzedHands]);
+  }, [session, plan, analyzedHands, refresh]);
 
-  const limit = PLAN_LIMITS[plan].analyzedHands;
+  const limit = PLAN_LIMITS[plan].analyzedHands + bonusBalance + bonusUsed;
   const value = useMemo(() => ({
     plan,
     subscriptionStatus,

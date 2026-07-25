@@ -6,6 +6,7 @@ import { AuthProvider } from "@/components/auth-provider";
 import { PlanProvider } from "@/components/plan-provider";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://poker-theta.vercel.app"),
@@ -21,6 +22,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="ja">
       <body>
+        {process.env.NEXT_PUBLIC_ADSENSE_PUBLISHER_ID&&<Script
+          async
+          strategy="afterInteractive"
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_PUBLISHER_ID}`}
+          crossOrigin="anonymous"
+        />}
         <AuthProvider>
           <PlanProvider>
             <PokerProvider>
