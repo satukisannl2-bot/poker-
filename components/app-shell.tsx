@@ -20,7 +20,7 @@ const publicNav = [
   { href: "/affiliate", label: "紹介プログラム", icon: Share2 },
   { href: "/account", label: "アカウント", icon: UserRound },
 ];
-const publicPaths = ["/", "/login", "/pricing", "/affiliate", "/terms", "/privacy", "/legal", "/account", "/r"];
+const publicPaths = ["/", "/play", "/login", "/pricing", "/affiliate", "/terms", "/privacy", "/legal", "/account", "/r"];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
@@ -31,7 +31,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const requiresLogin = !isPublic;
   const nav = user
     ? [publicNav[0], ...protectedNav, ...publicNav.slice(1)]
-    : publicNav;
+    : [publicNav[0], protectedNav[0], ...publicNav.slice(1)];
 
   useEffect(() => {
     if (!loading && requiresLogin && !user) {
@@ -60,7 +60,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   : item.href === "/pricing" ? "nav-section nav-account"
                     : ""
             } key={item.href}>
-              {user && item.href === "/play" && <span className="nav-group-label">プレイ・分析</span>}
+              {item.href === "/play" && <span className="nav-group-label">{user ? "プレイ・分析" : "無料体験"}</span>}
               {user && item.href === "/pricing" && <span className="nav-group-label">サービス・設定</span>}
               <Link href={item.href} onClick={() => setOpen(false)} className={item.href==="/" ? path==="/"?"active":"" : path.startsWith(item.href) ? "active" : ""}>
                 <item.icon size={19}/>{item.label}

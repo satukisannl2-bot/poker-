@@ -10,3 +10,4 @@
 .sidebar .nav-home{margin-bottom:8px}
 .sidebar .nav-section{margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.1)}
 .sidebar .nav-group-label{display:block;padding:0 12px 8px;color:#82a79d;font-size:8px;font-weight:700;letter-spacing:.16em}
+.guest-trial-count{display:flex;align-items:center;justify-content:space-between;background:#edf5f2;border:1px solid #cfe1da;border-radius:9px;padding:13px 15px;color:#1e6656;font-size:12px}.guest-trial-count b{font-size:11px}.guest-finish-actions{display:grid;gap:9px}.guest-finish-actions a{display:block;border-radius:8px;background:#1e6656;color:white;padding:14px;font-weight:700}.guest-finish-actions .sub{background:white;border:1px solid var(--line);color:#1e6656}
